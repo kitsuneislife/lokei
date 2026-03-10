@@ -17,7 +17,7 @@ class AuthViewModelTest {
 
     @Test
     fun successfulRegisterUpdatesUser() = runBlocking {
-        viewModel.register("Bob", "bob@example.com", "pwd")
+        viewModel.register("Bob", "bob@example.com", "pwd", bypassUploadGate = true)
         val user = viewModel.currentUser.first()
         assertNotNull(user)
         assertEquals("Bob", user?.name)

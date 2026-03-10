@@ -1,6 +1,7 @@
 package com.lukas.lokei.auth
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 
@@ -14,14 +15,24 @@ class AuthViewModel : ViewModel() {
     private val _successMessage = MutableStateFlow<String?>(null)
     val successMessage: StateFlow<String?> = _successMessage
 
+    private val uploadService = FakeUploadService(viewModelScope)
+    val cpfUploadState: StateFlow<UploadState> = uploadService.cpfUploadState()
+    val cnhUploadState: StateFlow<UploadState> = uploadService.cnhUploadState()
+
     fun register(
         name: String,
         email: String,
         password: String,
         cpf: String = "",
         cnh: String = "",
-        documentsValidated: Boolean = false
+        documentsValidated: Boolean = false,
+        bypassUploadGate: Boolean = false
     ) {
+        if (!bypassUploadGate && (cpfUploadState.value.isCompleted.not() || cnhUploadState.value.isCompleted.not())) {
+            _errorMessage.value = "Finalize o upload de CPF e CNH"
+            return
+        }
+
         val success = AccountRepository.register(
             name = name,
             email = email,
@@ -41,6 +52,7 @@ class AuthViewModel : ViewModel() {
             )
             _errorMessage.value = null
             _successMessage.value = "Conta criada com sucesso"
+            uploadService.resetAll()
         } else {
             _errorMessage.value = "Email já cadastrado"
         }
@@ -68,6 +80,16 @@ class AuthViewModel : ViewModel() {
 
     fun clearSuccess() {
         _successMessage.value = null
+    }
+
+    fun startCpfUpload() {
+        uploadService.startCpfUpload()
+        _successMessage.value = "Upload de CPF iniciado"
+    }
+
+    fun startCnhUpload() {
+        uploadService.startCnhUpload()
+        _successMessage.value = "Upload de CNH iniciado"
     }
 
     fun updateCurrentProfile(

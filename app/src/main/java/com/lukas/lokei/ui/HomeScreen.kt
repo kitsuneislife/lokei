@@ -7,13 +7,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.NavController
 import com.lukas.lokei.auth.AuthViewModel
 import com.lukas.lokei.ui.components.AppToastType
 import com.lukas.lokei.ui.components.ShowStandardToast
 
 @Composable
-fun HomeScreen(navController: NavController, authViewModel: AuthViewModel = viewModel()) {
+fun HomeScreen(authViewModel: AuthViewModel = viewModel()) {
     val user by authViewModel.currentUser.collectAsState()
     val successMessage by authViewModel.successMessage.collectAsState()
 
@@ -52,12 +51,6 @@ fun HomeScreen(navController: NavController, authViewModel: AuthViewModel = view
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
                 Spacer(modifier = Modifier.height(8.dp))
-                Button(
-                    onClick = { navController.navigate("profile") },
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    Text("Perfil")
-                }
                 Button(
                     onClick = { authViewModel.logout() },
                     modifier = Modifier.fillMaxWidth()

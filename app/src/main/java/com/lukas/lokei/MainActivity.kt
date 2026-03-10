@@ -12,9 +12,8 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import ui.theme.AppTheme
 
-import com.lukas.lokei.ui.HomeScreen
 import com.lukas.lokei.ui.LoginScreen
-import com.lukas.lokei.ui.ProfileScreen
+import com.lukas.lokei.ui.MainMenuScreen
 import com.lukas.lokei.ui.RegisterScreen
 
 class MainActivity : ComponentActivity() {
@@ -29,12 +28,12 @@ class MainActivity : ComponentActivity() {
                 // when user logs out or logs in we navigate appropriately
                 LaunchedEffect(currentUser) {
                     if (currentUser != null) {
-                        navController.navigate("home") {
+                        navController.navigate("main") {
                             popUpTo("login") { inclusive = true }
                         }
                     } else {
                         navController.navigate("login") {
-                            popUpTo(navController.graph.startDestinationId) { inclusive = true }
+                            popUpTo("main") { inclusive = true }
                         }
                     }
                 }
@@ -42,8 +41,7 @@ class MainActivity : ComponentActivity() {
                 NavHost(navController = navController, startDestination = "login") {
                     composable("login") { LoginScreen(navController, authViewModel) }
                     composable("register") { RegisterScreen(navController, authViewModel) }
-                    composable("home") { HomeScreen(navController, authViewModel) }
-                    composable("profile") { ProfileScreen(navController, authViewModel) }
+                    composable("main") { MainMenuScreen(authViewModel) }
                 }
             }
         }

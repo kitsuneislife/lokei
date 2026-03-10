@@ -24,9 +24,9 @@ fun RegisterScreen(navController: NavController, authViewModel: AuthViewModel = 
     var password by remember { mutableStateOf("") }
     var cpf by remember { mutableStateOf("") }
     var cnh by remember { mutableStateOf("") }
-    var uploadedCpf by remember { mutableStateOf(false) }
-    var uploadedCnh by remember { mutableStateOf(false) }
     var documentsValidated by remember { mutableStateOf(false) }
+    val cpfUpload by authViewModel.cpfUploadState.collectAsState()
+    val cnhUpload by authViewModel.cnhUploadState.collectAsState()
 
     ShowStandardToast(
         message = error,
@@ -112,28 +112,70 @@ fun RegisterScreen(navController: NavController, authViewModel: AuthViewModel = 
 
                 Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                     FilterChip(
-                        selected = uploadedCpf,
+                        selected = cpfUpload.isCompleted,
                         onClick = {
-                            uploadedCpf = true
+                            authViewModel.startCpfUpload()
                             authViewModel.clearError()
-                            authViewModel.clearSuccess()
                         },
-                        label = { Text(if (uploadedCpf) "CPF enviado" else "Enviar CPF") }
+                        label = {
+                            Text(
+                                if (cpfUpload.isCompleted) {
+                                    "CPF enviado"
+                                } else if (cpfUpload.isUploading) {
+                                    "Enviando CPF..."
+                                } else {
+                                    "Enviar CPF"
+                                }
+                            )
+                        }
                     )
                     FilterChip(
-                        selected = uploadedCnh,
+                        selected = cnhUpload.isCompleted,
                         onClick = {
-                            uploadedCnh = true
+                            authViewModel.startCnhUpload()
                             authViewModel.clearError()
-                            authViewModel.clearSuccess()
                         },
-                        label = { Text(if (uploadedCnh) "CNH enviada" else "Enviar CNH") }
+                        label = {
+                            Text(
+                                if (cnhUpload.isCompleted) {
+                                    "CNH enviada"
+                                } else if (cnhUpload.isUploading) {
+                                    "Enviando CNH..."
+                                } else {
+                                    "Enviar CNH"
+                                }
+                            )
+                        }
+                    )
+                }
+
+                if (cpfUpload.isUploading) {
+                    LinearProgressIndicator(
+                        progress = cpfUpload.progress / 100f,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                    Text(
+                        "CPF: ${cpfUpload.progress}%",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
+
+                if (cnhUpload.isUploading) {
+                    LinearProgressIndicator(
+                        progress = cnhUpload.progress / 100f,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                    Text(
+                        "CNH: ${cnhUpload.progress}%",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
 
                 AssistChip(
                     onClick = {
-                        documentsValidated = uploadedCpf && uploadedCnh
+                        documentsValidated = cpfUpload.isCompleted && cnhUpload.isCompleted
                     },
                     label = {
                         Text(
@@ -146,7 +188,7 @@ fun RegisterScreen(navController: NavController, authViewModel: AuthViewModel = 
                     }
                 )
 
-                if (!documentsValidated && (uploadedCpf || uploadedCnh)) {
+                if (!documentsValidated && (cpfUpload.isCompleted || cnhUpload.isCompleted)) {
                     Text(
                         "Envie CPF e CNH para autenticar.",
                         color = Color(0xFFFFB74D),
