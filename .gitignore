@@ -1,0 +1,27 @@
+.gradle/
+build/
+app/build/
+
+# IDE
+.vscode/
+.idea/
+*.iml
+
+# Kit files
+.kit/
+
+# Gradle
+.gradle/
+
+# Android
+/local.properties
+**/local.properties
+*.apk
+*.ap_
+*.hprof
+
+# Kotlin/Java
+out/
+
+# telemetry placeholder
+# (keep file, not ignored)
