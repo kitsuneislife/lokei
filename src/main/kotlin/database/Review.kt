@@ -2,6 +2,8 @@ package database
 
 import org.jetbrains.exposed.dao.id.IntIdTable
 import org.jetbrains.exposed.sql.ResultRow
+import org.jetbrains.exposed.sql.jodatime.datetime
+import org.joda.time.DateTime
 
 object Reviews : IntIdTable() {
     val reserva = reference("reserva_id", Reservations)
@@ -10,10 +12,6 @@ object Reviews : IntIdTable() {
     val comentario = varchar("comentario", 1000).nullable()
     val data = datetime("data")
 }
-
-import org.jetbrains.exposed.sql.ResultRow
-import org.jetbrains.exposed.sql.jodatime.datetime
-import org.joda.time.DateTime
 
 data class Review(
     val id: Int,

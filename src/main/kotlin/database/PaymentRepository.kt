@@ -1,6 +1,7 @@
 package database
 
 import org.jetbrains.exposed.sql.insert
+import org.jetbrains.exposed.sql.insertAndGetId
 import org.jetbrains.exposed.sql.selectAll
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.joda.time.DateTime
@@ -13,16 +14,15 @@ object PaymentRepository {
         dataPagamento: DateTime,
         status: String = "CREATED"
     ): Payment {
-        var id = 0
-        transaction {
-            id = Payments.insert {
+        val id = transaction {
+            Payments.insertAndGetId {
                 it[Payments.reserva] = reservaId
                 it[Payments.valor] = valor.toBigDecimal()
                 it[Payments.metodo] = metodo
                 it[Payments.dataPagamento] = dataPagamento
                 it[Payments.status] = status
-            } get Payments.id
-        }.value
+            }.value
+        }
         return Payment(id, reservaId, valor, metodo, dataPagamento, status)
     }
 

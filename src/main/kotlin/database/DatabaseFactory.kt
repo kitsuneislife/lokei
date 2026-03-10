@@ -9,6 +9,14 @@ object DatabaseFactory {
         // connect to in-memory H2 database
         Database.connect("jdbc:h2:mem:test;DB_CLOSE_DELAY=-1", driver = "org.h2.Driver")
         transaction {
+            SchemaUtils.drop(
+                Reviews,
+                Contracts,
+                Payments,
+                Reservations,
+                Vehicles,
+                Users
+            )
             SchemaUtils.create(
                 Users,
                 Vehicles,

@@ -1,6 +1,7 @@
 package database
 
 import org.jetbrains.exposed.sql.insert
+import org.jetbrains.exposed.sql.insertAndGetId
 import org.jetbrains.exposed.sql.selectAll
 import org.jetbrains.exposed.sql.transactions.transaction
 
@@ -15,9 +16,8 @@ object VehicleRepository {
         rentalPolicies: String?,
         availabilityCalendar: String?
     ): Vehicle {
-        var id = 0
-        transaction {
-            id = Vehicles.insert {
+        val id = transaction {
+            Vehicles.insertAndGetId {
                 it[Vehicles.proprietor] = proprietorId
                 it[Vehicles.plate] = plate
                 it[Vehicles.model] = model
@@ -26,8 +26,8 @@ object VehicleRepository {
                 it[Vehicles.dailyRate] = dailyRate.toBigDecimal()
                 it[Vehicles.rentalPolicies] = rentalPolicies
                 it[Vehicles.availabilityCalendar] = availabilityCalendar
-            } get Vehicles.id
-        }.value
+            }.value
+        }
         return Vehicle(id, proprietorId, plate, model, year, photoUrls, dailyRate, rentalPolicies, availabilityCalendar)
     }
 
