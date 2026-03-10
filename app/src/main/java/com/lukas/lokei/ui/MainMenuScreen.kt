@@ -12,6 +12,7 @@ import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
@@ -41,6 +42,7 @@ private val mainTabs = listOf(
 @Composable
 fun MainMenuScreen(authViewModel: AuthViewModel) {
     val tabNavController = rememberNavController()
+    val currentUser by authViewModel.currentUser.collectAsState()
 
     Scaffold(
         bottomBar = { MainBottomBar(tabNavController) }
@@ -79,6 +81,26 @@ fun MainMenuScreen(authViewModel: AuthViewModel) {
                     authViewModel = authViewModel,
                     onOpenContracts = {
                         tabNavController.navigate("main/contracts?vehicleId=-1&days=1")
+                    },
+                    onOpenChat = {
+                        tabNavController.navigate("main/chat")
+                    },
+                    onOpenMonitoring = {
+                        tabNavController.navigate("main/monitoring")
+                    },
+                    onOpenReviews = {
+                        tabNavController.navigate("main/reviews")
+                    },
+                    onOpenSupport = {
+                        tabNavController.navigate("main/support")
+                    },
+                    onOpenLoyalty = {
+                        tabNavController.navigate("main/loyalty")
+                    },
+                    onOpenAdminPanel = if (currentUser?.role == "ADMIN") {
+                        { tabNavController.navigate("main/admin/dashboard") }
+                    } else {
+                        null
                     }
                 )
             }
@@ -135,8 +157,59 @@ fun MainMenuScreen(authViewModel: AuthViewModel) {
                 val vehicleId = backStackEntry.arguments?.getInt("vehicleId") ?: -1
                 val days = backStackEntry.arguments?.getInt("days") ?: 1
                 DigitalContractsScreen(
+                    authViewModel = authViewModel,
                     vehicleId = vehicleId,
                     rentalDays = days,
+                    onBack = { tabNavController.popBackStack() }
+                )
+            }
+            composable("main/chat") {
+                InternalChatScreen(
+                    authViewModel = authViewModel,
+                    onBack = { tabNavController.popBackStack() }
+                )
+            }
+            composable("main/monitoring") {
+                RealtimeMonitoringScreen(
+                    authViewModel = authViewModel,
+                    onBack = { tabNavController.popBackStack() }
+                )
+            }
+            composable("main/reviews") {
+                ReviewsHistoryScreen(
+                    authViewModel = authViewModel,
+                    onBack = { tabNavController.popBackStack() }
+                )
+            }
+            composable("main/support") {
+                HelpSupportScreen(
+                    authViewModel = authViewModel,
+                    onBack = { tabNavController.popBackStack() }
+                )
+            }
+            composable("main/loyalty") {
+                LoyaltyPanelScreen(
+                    authViewModel = authViewModel,
+                    onBack = { tabNavController.popBackStack() }
+                )
+            }
+            composable("main/admin/dashboard") {
+                AdminOperationsDashboardScreen(
+                    authViewModel = authViewModel,
+                    onBack = { tabNavController.popBackStack() },
+                    onOpenModeration = { tabNavController.navigate("main/admin/moderation") },
+                    onOpenDisputes = { tabNavController.navigate("main/admin/disputes") }
+                )
+            }
+            composable("main/admin/moderation") {
+                AdminModerationScreen(
+                    authViewModel = authViewModel,
+                    onBack = { tabNavController.popBackStack() }
+                )
+            }
+            composable("main/admin/disputes") {
+                AdminDisputesScreen(
+                    authViewModel = authViewModel,
                     onBack = { tabNavController.popBackStack() }
                 )
             }
@@ -149,8 +222,10 @@ private fun MainBottomBar(navController: NavHostController) {
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
     val selectedTabRoute =
-        if (currentRoute != null && (currentRoute.startsWith("main/vehicle/") || currentRoute.startsWith("main/search"))) {
+        if (currentRoute != null && (currentRoute.startsWith("main/vehicle/") || currentRoute.startsWith("main/search") || currentRoute.startsWith("main/checkout") || currentRoute.startsWith("main/contracts"))) {
             "main/explore"
+        } else if (currentRoute != null && (currentRoute.startsWith("main/chat") || currentRoute.startsWith("main/monitoring") || currentRoute.startsWith("main/reviews") || currentRoute.startsWith("main/support") || currentRoute.startsWith("main/loyalty") || currentRoute.startsWith("main/admin"))) {
+            "main/profile"
         } else {
             currentRoute
         }

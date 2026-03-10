@@ -15,58 +15,29 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.lukas.lokei.mock.ExploreVehicleRepository
-
-private data class ContractItem(
-    val id: String,
-    val title: String,
-    val period: String,
-    val amount: String,
-    val status: String
-)
+import com.lukas.lokei.auth.AuthViewModel
+import com.lukas.lokei.mock.ContractsRepository
 
 @Composable
-fun DigitalContractsScreen(vehicleId: Int, rentalDays: Int, onBack: () -> Unit) {
-    val vehicle = ExploreVehicleRepository.byId(vehicleId)
-    val signedMap = remember { mutableStateMapOf<String, Boolean>() }
-
-    val activeContract = if (vehicle != null) {
-        listOf(
-            ContractItem(
-                id = "LK-${vehicle.id}-ATIVO",
-                title = "${vehicle.title} - Contrato atual",
-                period = "$rentalDays dia(s)",
-                amount = "R$ ${"%.2f".format(vehicle.dailyPrice * rentalDays)}",
-                status = "Ativo"
-            )
-        )
-    } else {
-        emptyList()
-    }
-
-    val history = listOf(
-        ContractItem(
-            id = "LK-HIST-001",
-            title = "Fiat Mobi Like",
-            period = "3 dias",
-            amount = "R$ 540.00",
-            status = "Finalizado"
-        ),
-        ContractItem(
-            id = "LK-HIST-002",
-            title = "Renault Kwid",
-            period = "2 dias",
-            amount = "R$ 360.00",
-            status = "Finalizado"
-        )
+fun DigitalContractsScreen(
+    authViewModel: AuthViewModel,
+    vehicleId: Int,
+    rentalDays: Int,
+    onBack: () -> Unit
+) {
+    val currentUser by authViewModel.currentUser.collectAsState()
+    val contracts = ContractsRepository.listForUser(
+        email = currentUser?.email.orEmpty(),
+        activeVehicleId = vehicleId,
+        rentalDays = rentalDays
     )
-
-    val contracts = activeContract + history
+    val signedMap = remember { mutableStateMapOf<String, Boolean>() }
 
     LazyColumn(
         modifier = Modifier

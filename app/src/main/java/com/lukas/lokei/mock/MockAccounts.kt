@@ -25,5 +25,14 @@ object MockAccounts {
         role = "LOCATARIO"
     )
 
-    val defaults = listOf(proprietor, renter)
+    val admin = Account(
+        name = "Administrador Lokei",
+        email = "admin",
+        password = "admin",
+        cpf = "333.333.333-33",
+        documentsValidated = true,
+        role = "ADMIN"
+    )
+
+    val defaults = listOf(proprietor, renter, admin)
 }

@@ -72,6 +72,8 @@ object AccountRepository {
         accounts.clear()
     }
 
+    fun allAccounts(): List<Account> = accounts.values.sortedBy { it.email }
+
     fun ensureMockData() {
         if (accounts.isNotEmpty()) return
         MockAccounts.defaults.forEach { account ->

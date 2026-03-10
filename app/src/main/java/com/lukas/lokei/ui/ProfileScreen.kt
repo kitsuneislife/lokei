@@ -29,7 +29,13 @@ import com.lukas.lokei.ui.components.ShowStandardToast
 @Composable
 fun ProfileScreen(
     authViewModel: AuthViewModel = viewModel(),
-    onOpenContracts: (() -> Unit)? = null
+    onOpenContracts: (() -> Unit)? = null,
+    onOpenChat: (() -> Unit)? = null,
+    onOpenMonitoring: (() -> Unit)? = null,
+    onOpenReviews: (() -> Unit)? = null,
+    onOpenSupport: (() -> Unit)? = null,
+    onOpenLoyalty: (() -> Unit)? = null,
+    onOpenAdminPanel: (() -> Unit)? = null
 ) {
     val user by authViewModel.currentUser.collectAsState()
     val error by authViewModel.errorMessage.collectAsState()
@@ -142,6 +148,54 @@ fun ProfileScreen(
                     enabled = onOpenContracts != null
                 ) {
                     Text("Painel de contratos digitais")
+                }
+
+                Button(
+                    onClick = { onOpenChat?.invoke() },
+                    modifier = Modifier.fillMaxWidth(),
+                    enabled = onOpenChat != null
+                ) {
+                    Text("Chat interno")
+                }
+
+                Button(
+                    onClick = { onOpenMonitoring?.invoke() },
+                    modifier = Modifier.fillMaxWidth(),
+                    enabled = onOpenMonitoring != null
+                ) {
+                    Text("Monitoramento em tempo real")
+                }
+
+                Button(
+                    onClick = { onOpenReviews?.invoke() },
+                    modifier = Modifier.fillMaxWidth(),
+                    enabled = onOpenReviews != null
+                ) {
+                    Text("Avaliações e histórico")
+                }
+
+                Button(
+                    onClick = { onOpenSupport?.invoke() },
+                    modifier = Modifier.fillMaxWidth(),
+                    enabled = onOpenSupport != null
+                ) {
+                    Text("Central de ajuda")
+                }
+
+                Button(
+                    onClick = { onOpenLoyalty?.invoke() },
+                    modifier = Modifier.fillMaxWidth(),
+                    enabled = onOpenLoyalty != null
+                ) {
+                    Text("Painel de fidelidade")
+                }
+
+                Button(
+                    onClick = { onOpenAdminPanel?.invoke() },
+                    modifier = Modifier.fillMaxWidth(),
+                    enabled = onOpenAdminPanel != null
+                ) {
+                    Text("Painel administrativo")
                 }
             }
         }
