@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="Theme.Lokei" parent="Theme.Material3.DayNight.NoActionBar">
+        <!-- Customize your material3 theme here. -->
+    </style>
+</resources>
