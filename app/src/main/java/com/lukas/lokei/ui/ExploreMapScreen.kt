@@ -40,25 +40,27 @@ fun ExploreMapScreen(onOpenSearch: (String) -> Unit) {
         <html>
         <head>
           <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
-          <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-                integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
-                crossorigin="" />
-          <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
-                  integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
-                  crossorigin=""></script>
+          <link rel="stylesheet" href="leaflet.css" />
+          <script src="leaflet.js"></script>
           <style>
             html, body, #map {
               height: 100%;
               width: 100%;
               margin: 0;
               padding: 0;
-              background: #1a1a1a;
             }
           </style>
         </head>
         <body>
           <div id="map"></div>
           <script>
+            delete L.Icon.Default.prototype._getIconUrl;
+            L.Icon.Default.mergeOptions({
+              iconUrl: 'marker-icon.png',
+              iconRetinaUrl: 'marker-icon-2x.png',
+              shadowUrl: 'marker-shadow.png'
+            });
+
             var map = L.map('map', {
               zoomControl: false
             }).setView([-24.9555, -53.4552], 13);
@@ -95,10 +97,10 @@ fun ExploreMapScreen(onOpenSearch: (String) -> Unit) {
                     settings.javaScriptEnabled = true
                     settings.domStorageEnabled = true
                     settings.loadsImagesAutomatically = true
+                    settings.allowFileAccess = true
                     settings.mixedContentMode = WebSettings.MIXED_CONTENT_ALWAYS_ALLOW
                     settings.cacheMode = WebSettings.LOAD_DEFAULT
-                    setBackgroundColor(android.graphics.Color.TRANSPARENT)
-                    loadDataWithBaseURL("https://lokei.app/", html, "text/html", "utf-8", null)
+                    loadDataWithBaseURL("file:///android_asset/", html, "text/html", "utf-8", null)
                 }
             },
             modifier = Modifier.fillMaxSize()
