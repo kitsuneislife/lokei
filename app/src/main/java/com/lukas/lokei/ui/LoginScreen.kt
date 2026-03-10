@@ -14,7 +14,7 @@ import com.lukas.lokei.auth.AuthViewModel
 
 @Composable
 fun LoginScreen(navController: NavController, authViewModel: AuthViewModel = viewModel()) {
-    val state by authViewModel.errorMessage.collectAsState()
+    val errorMessage = authViewModel.errorMessage.collectAsState().value
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
 
@@ -40,8 +40,8 @@ fun LoginScreen(navController: NavController, authViewModel: AuthViewModel = vie
             visualTransformation = PasswordVisualTransformation()
         )
         Spacer(modifier = Modifier.height(16.dp))
-        if (state != null) {
-            Text(state, color = MaterialTheme.colorScheme.error)
+        if (errorMessage != null) {
+            Text(errorMessage, color = MaterialTheme.colorScheme.error)
             Spacer(modifier = Modifier.height(8.dp))
         }
         Button(onClick = { authViewModel.login(email.trim(), password); }) {
