@@ -19,6 +19,10 @@ class AuthViewModel : ViewModel() {
     val cpfUploadState: StateFlow<UploadState> = uploadService.cpfUploadState()
     val cnhUploadState: StateFlow<UploadState> = uploadService.cnhUploadState()
 
+    init {
+        AccountRepository.ensureMockData()
+    }
+
     fun register(
         name: String,
         email: String,
@@ -39,7 +43,8 @@ class AuthViewModel : ViewModel() {
             password = password,
             cpf = cpf,
             cnh = cnh,
-            documentsValidated = documentsValidated
+            documentsValidated = documentsValidated,
+            role = "LOCATARIO"
         )
         if (success) {
             _currentUser.value = Account(
@@ -48,7 +53,8 @@ class AuthViewModel : ViewModel() {
                 password = password,
                 cpf = cpf,
                 cnh = cnh,
-                documentsValidated = documentsValidated
+                documentsValidated = documentsValidated,
+                role = "LOCATARIO"
             )
             _errorMessage.value = null
             _successMessage.value = "Conta criada com sucesso"

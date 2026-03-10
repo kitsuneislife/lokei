@@ -1,9 +1,10 @@
-package com.lukas.lokei.ui
+package com.lukas.lokei.mock
 
 data class OwnerProfile(
     val name: String,
     val rating: Double,
-    val tripsCompleted: Int
+    val tripsCompleted: Int,
+    val username: String
 )
 
 data class VehicleReview(
@@ -17,6 +18,8 @@ data class ExploreVehicle(
     val title: String,
     val type: String,
     val location: String,
+    val latitude: Double,
+    val longitude: Double,
     val dailyPrice: Double,
     val rating: Double,
     val seats: Int,
@@ -34,14 +37,16 @@ object ExploreVehicleRepository {
             id = 1,
             title = "Jeep Renegade 2022",
             type = "SUV",
-            location = "Centro",
+            location = "Centro, Cascavel",
+            latitude = -24.9555,
+            longitude = -53.4552,
             dailyPrice = 249.0,
             rating = 4.8,
             seats = 5,
             transmission = "Automático",
             fuel = "Flex",
             photos = listOf("Foto frontal", "Foto lateral", "Interior"),
-            owner = OwnerProfile("Marina Alves", 4.9, 63),
+            owner = OwnerProfile("Proprietário Lokei", 4.9, 63, "proprietario"),
             reviews = listOf(
                 VehicleReview("Carlos", 5.0, "Carro impecável e entrega rápida."),
                 VehicleReview("Lia", 4.6, "Muito confortável para viagem.")
@@ -52,14 +57,16 @@ object ExploreVehicleRepository {
             id = 2,
             title = "Fiat Argo 2021",
             type = "Hatch",
-            location = "Zona Sul",
+            location = "Região do Lago, Cascavel",
+            latitude = -24.9488,
+            longitude = -53.4715,
             dailyPrice = 159.0,
             rating = 4.5,
             seats = 5,
             transmission = "Manual",
             fuel = "Flex",
             photos = listOf("Foto frontal", "Painel", "Porta-malas"),
-            owner = OwnerProfile("Roberto Lima", 4.7, 41),
+            owner = OwnerProfile("Proprietário Lokei", 4.9, 63, "proprietario"),
             reviews = listOf(
                 VehicleReview("Fernanda", 4.4, "Ótimo custo-benefício."),
                 VehicleReview("João", 4.7, "Veículo econômico e limpo.")
@@ -70,14 +77,16 @@ object ExploreVehicleRepository {
             id = 3,
             title = "Toyota Corolla 2023",
             type = "Sedan",
-            location = "Zona Norte",
+            location = "Bairro Canadá, Cascavel",
+            latitude = -24.9402,
+            longitude = -53.4384,
             dailyPrice = 319.0,
             rating = 4.9,
             seats = 5,
             transmission = "Automático",
             fuel = "Híbrido",
             photos = listOf("Foto frontal", "Banco traseiro", "Multimídia"),
-            owner = OwnerProfile("Paula Santos", 5.0, 88),
+            owner = OwnerProfile("Proprietário Lokei", 4.9, 63, "proprietario"),
             reviews = listOf(
                 VehicleReview("Ricardo", 5.0, "Experiência premium do início ao fim."),
                 VehicleReview("Bianca", 4.8, "Muito silencioso e confortável.")
@@ -89,4 +98,6 @@ object ExploreVehicleRepository {
     fun all(): List<ExploreVehicle> = vehicles
 
     fun byId(id: Int): ExploreVehicle? = vehicles.firstOrNull { it.id == id }
+
+    fun forOwner(username: String): List<ExploreVehicle> = vehicles.filter { it.owner.username == username }
 }

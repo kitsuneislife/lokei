@@ -21,6 +21,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.lukas.lokei.mock.ExploreVehicleRepository
 
 @OptIn(androidx.compose.material3.ExperimentalMaterial3Api::class)
 @Composable
@@ -32,6 +33,7 @@ fun VehicleDashboardScreen() {
     var rentalPolicy by remember { mutableStateOf("") }
     var photosUploaded by remember { mutableStateOf(false) }
     var crlvUploaded by remember { mutableStateOf(false) }
+    val ownerVehicles = ExploreVehicleRepository.forOwner("proprietario")
 
     Box(
         modifier = Modifier
@@ -107,6 +109,11 @@ fun VehicleDashboardScreen() {
                             Text(if (crlvUploaded) "CRLV enviado" else "Upload de CRLV")
                         }
                     )
+                }
+
+                Text("Veículos mock do proprietário (proprietario)")
+                ownerVehicles.forEach { vehicle ->
+                    Text("• ${vehicle.title} — ${vehicle.location} — R$ ${vehicle.dailyPrice}/dia")
                 }
             }
         }

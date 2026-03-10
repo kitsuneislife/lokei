@@ -32,4 +32,18 @@ class AccountRepositoryTest {
         val acc = AccountRepository.login("a@example.com", "wrong")
         assertNull(acc)
     }
+
+    @Test
+    fun injectedMockCredentialsWork() {
+        AccountRepository.clear()
+        AccountRepository.ensureMockData()
+
+        val proprietor = AccountRepository.login("proprietario", "proprietario")
+        val renter = AccountRepository.login("locatario", "locatario")
+
+        assertNotNull(proprietor)
+        assertNotNull(renter)
+        assertEquals("PROPRIETARIO", proprietor?.role)
+        assertEquals("LOCATARIO", renter?.role)
+    }
 }

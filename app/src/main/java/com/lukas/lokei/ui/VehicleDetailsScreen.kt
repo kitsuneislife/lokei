@@ -24,6 +24,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.lukas.lokei.mock.ExploreVehicleRepository
 
 @Composable
 fun VehicleDetailsScreen(vehicleId: Int, onBack: () -> Unit) {

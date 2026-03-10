@@ -29,10 +29,12 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.lukas.lokei.mock.ExploreVehicleRepository
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SearchExploreScreen(onOpenDetails: (Int) -> Unit) {
+fun SearchExploreScreen(initialQuery: String = "", onOpenDetails: (Int) -> Unit) {
+    var query by remember { mutableStateOf(initialQuery) }
     var selectedType by remember { mutableStateOf("Todos") }
     var maxPrice by remember { mutableStateOf(400f) }
     var minRating by remember { mutableStateOf(4.0f) }
@@ -42,11 +44,12 @@ fun SearchExploreScreen(onOpenDetails: (Int) -> Unit) {
 
     val filteredVehicles = remember(selectedType, maxPrice, minRating, location) {
         ExploreVehicleRepository.all().filter { vehicle ->
+            val queryMatch = query.isBlank() || vehicle.title.contains(query, ignoreCase = true)
             val typeMatch = selectedType == "Todos" || vehicle.type == selectedType
             val priceMatch = vehicle.dailyPrice <= maxPrice.toDouble()
             val ratingMatch = vehicle.rating >= minRating.toDouble()
             val locationMatch = location.isBlank() || vehicle.location.contains(location, ignoreCase = true)
-            typeMatch && priceMatch && ratingMatch && locationMatch
+            queryMatch && typeMatch && priceMatch && ratingMatch && locationMatch
         }
     }
 
@@ -57,24 +60,22 @@ fun SearchExploreScreen(onOpenDetails: (Int) -> Unit) {
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
         item {
-            Text("Busca e Exploração", style = MaterialTheme.typography.headlineSmall)
+            Text("Busca", style = MaterialTheme.typography.headlineSmall)
             Text(
-                "Mapa + veículos próximos com filtros",
+                "Query + filtros + resultados",
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
         }
 
         item {
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(150.dp)
-                    .background(MaterialTheme.colorScheme.surfaceVariant),
-                contentAlignment = Alignment.Center
-            ) {
-                Text("Mapa (placeholder)", color = MaterialTheme.colorScheme.onSurfaceVariant)
-            }
+            OutlinedTextField(
+                value = query,
+                onValueChange = { query = it },
+                label = { Text("Pesquisar por nome") },
+                modifier = Modifier.fillMaxWidth(),
+                singleLine = true
+            )
         }
 
         item {

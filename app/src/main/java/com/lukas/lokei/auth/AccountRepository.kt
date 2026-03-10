@@ -1,5 +1,7 @@
 package com.lukas.lokei.auth
 
+import com.lukas.lokei.mock.MockAccounts
+
 data class Account(
     val name: String,
     val email: String,
@@ -8,11 +10,16 @@ data class Account(
     val cnh: String = "",
     val bankData: String = "",
     val paymentMethod: String = "",
-    val documentsValidated: Boolean = false
+    val documentsValidated: Boolean = false,
+    val role: String = "LOCATARIO"
 )
 
 object AccountRepository {
     private val accounts = mutableMapOf<String, Account>()
+
+    init {
+        ensureMockData()
+    }
 
     /**
      * Registers a new account. Returns true if successful, false if email already exists.
@@ -23,7 +30,8 @@ object AccountRepository {
         password: String,
         cpf: String = "",
         cnh: String = "",
-        documentsValidated: Boolean = false
+        documentsValidated: Boolean = false,
+        role: String = "LOCATARIO"
     ): Boolean {
         if (accounts.containsKey(email)) return false
         accounts[email] = Account(
@@ -32,7 +40,8 @@ object AccountRepository {
             password = password,
             cpf = cpf,
             cnh = cnh,
-            documentsValidated = documentsValidated
+            documentsValidated = documentsValidated,
+            role = role
         )
         return true
     }
@@ -61,5 +70,12 @@ object AccountRepository {
 
     fun clear() {
         accounts.clear()
+    }
+
+    fun ensureMockData() {
+        if (accounts.isNotEmpty()) return
+        MockAccounts.defaults.forEach { account ->
+            accounts[account.email] = account
+        }
     }
 }

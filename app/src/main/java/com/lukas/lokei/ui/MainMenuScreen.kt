@@ -51,7 +51,22 @@ fun MainMenuScreen(authViewModel: AuthViewModel) {
         ) {
             composable("main/home") { HomeScreen(authViewModel = authViewModel) }
             composable("main/explore") {
+                ExploreMapScreen(
+                    onOpenSearch = { query ->
+                        tabNavController.navigate("main/search?query=$query")
+                    }
+                )
+            }
+            composable(
+                route = "main/search?query={query}",
+                arguments = listOf(navArgument("query") {
+                    type = NavType.StringType
+                    defaultValue = ""
+                })
+            ) { backStackEntry ->
+                val query = backStackEntry.arguments?.getString("query").orEmpty()
                 SearchExploreScreen(
+                    initialQuery = query,
                     onOpenDetails = { vehicleId ->
                         tabNavController.navigate("main/vehicle/$vehicleId")
                     }
@@ -79,7 +94,11 @@ private fun MainBottomBar(navController: NavHostController) {
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
     val selectedTabRoute =
-        if (currentRoute != null && currentRoute.startsWith("main/vehicle/")) "main/explore" else currentRoute
+        if (currentRoute != null && (currentRoute.startsWith("main/vehicle/") || currentRoute.startsWith("main/search"))) {
+            "main/explore"
+        } else {
+            currentRoute
+        }
 
     NavigationBar {
         mainTabs.forEach { tab ->
