@@ -14,6 +14,7 @@ import ui.theme.AppTheme
 
 import com.lukas.lokei.ui.HomeScreen
 import com.lukas.lokei.ui.LoginScreen
+import com.lukas.lokei.ui.ProfileScreen
 import com.lukas.lokei.ui.RegisterScreen
 
 class MainActivity : ComponentActivity() {
@@ -41,7 +42,8 @@ class MainActivity : ComponentActivity() {
                 NavHost(navController = navController, startDestination = "login") {
                     composable("login") { LoginScreen(navController, authViewModel) }
                     composable("register") { RegisterScreen(navController, authViewModel) }
-                    composable("home") { HomeScreen(authViewModel) }
+                    composable("home") { HomeScreen(navController, authViewModel) }
+                    composable("profile") { ProfileScreen(navController, authViewModel) }
                 }
             }
         }
