@@ -1,5 +1,6 @@
 package com.lukas.lokei.ui
 
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.CalendarMonth
 import androidx.compose.material.icons.outlined.DirectionsCar
@@ -22,6 +23,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import com.lukas.lokei.auth.AuthViewModel
 
@@ -49,7 +51,8 @@ fun MainMenuScreen(authViewModel: AuthViewModel) {
     ) { innerPadding ->
         NavHost(
             navController = tabNavController,
-            startDestination = "main/home"
+            startDestination = "main/home",
+            modifier = Modifier.padding(innerPadding)
         ) {
             composable("main/home") { HomeScreen(authViewModel = authViewModel) }
             composable("main/explore") {

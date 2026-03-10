@@ -1,12 +1,29 @@
 package com.lukas.lokei.ui
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.slideInVertically
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Badge
+import androidx.compose.material.icons.outlined.CheckCircle
+import androidx.compose.material.icons.outlined.CloudUpload
+import androidx.compose.material.icons.outlined.CreditCard
+import androidx.compose.material.icons.outlined.Email
+import androidx.compose.material.icons.outlined.Lock
+import androidx.compose.material.icons.outlined.Person
+import androidx.compose.material.icons.outlined.Visibility
+import androidx.compose.material.icons.outlined.VisibilityOff
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
@@ -22,11 +39,15 @@ fun RegisterScreen(navController: NavController, authViewModel: AuthViewModel = 
     var name by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
+    var passwordVisible by remember { mutableStateOf(false) }
     var cpf by remember { mutableStateOf("") }
     var cnh by remember { mutableStateOf("") }
     var documentsValidated by remember { mutableStateOf(false) }
     val cpfUpload by authViewModel.cpfUploadState.collectAsState()
     val cnhUpload by authViewModel.cnhUploadState.collectAsState()
+    var visible by remember { mutableStateOf(false) }
+
+    LaunchedEffect(Unit) { visible = true }
 
     ShowStandardToast(
         message = error,
@@ -42,159 +63,231 @@ fun RegisterScreen(navController: NavController, authViewModel: AuthViewModel = 
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .padding(20.dp),
+            .padding(24.dp),
         contentAlignment = Alignment.Center
     ) {
-        ElevatedCard(
-            modifier = Modifier.fillMaxWidth(),
-            colors = CardDefaults.elevatedCardColors(
-                containerColor = MaterialTheme.colorScheme.surfaceVariant
-            )
+        AnimatedVisibility(
+            visible = visible,
+            enter = fadeIn() + slideInVertically { it / 3 }
         ) {
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(20.dp),
-                verticalArrangement = Arrangement.spacedBy(12.dp)
+                    .verticalScroll(rememberScrollState()),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                Text("Criar conta", style = MaterialTheme.typography.headlineSmall)
                 Text(
-                    "Preencha os dados para se cadastrar",
+                    "Lokei",
+                    style = MaterialTheme.typography.displaySmall,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.primary
+                )
+                Text(
+                    "Crie sua conta",
                     style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    textAlign = TextAlign.Center
                 )
 
-                OutlinedTextField(
-                    value = name,
-                    onValueChange = { name = it },
-                    label = { Text("Nome") },
-                    singleLine = true,
-                    modifier = Modifier.fillMaxWidth()
-                )
+                Spacer(modifier = Modifier.height(16.dp))
 
-                OutlinedTextField(
-                    value = email,
-                    onValueChange = { email = it },
-                    label = { Text("Email") },
-                    singleLine = true,
-                    modifier = Modifier.fillMaxWidth()
-                )
-
-                OutlinedTextField(
-                    value = password,
-                    onValueChange = { password = it },
-                    label = { Text("Senha") },
-                    singleLine = true,
-                    visualTransformation = PasswordVisualTransformation(),
-                    modifier = Modifier.fillMaxWidth()
-                )
-
-                OutlinedTextField(
-                    value = cpf,
-                    onValueChange = { cpf = it },
-                    label = { Text("CPF") },
-                    singleLine = true,
-                    modifier = Modifier.fillMaxWidth()
-                )
-
-                OutlinedTextField(
-                    value = cnh,
-                    onValueChange = { cnh = it },
-                    label = { Text("CNH") },
-                    singleLine = true,
-                    modifier = Modifier.fillMaxWidth()
-                )
-
-                Text(
-                    "Envio de documentos (placeholder)",
-                    style = MaterialTheme.typography.labelLarge
-                )
-
-                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    FilterChip(
-                        selected = cpfUpload.isCompleted,
-                        onClick = {
-                            authViewModel.startCpfUpload()
-                            authViewModel.clearError()
-                        },
-                        label = {
-                            Text(
-                                if (cpfUpload.isCompleted) {
-                                    "CPF enviado"
-                                } else if (cpfUpload.isUploading) {
-                                    "Enviando CPF..."
-                                } else {
-                                    "Enviar CPF"
-                                }
-                            )
-                        }
-                    )
-                    FilterChip(
-                        selected = cnhUpload.isCompleted,
-                        onClick = {
-                            authViewModel.startCnhUpload()
-                            authViewModel.clearError()
-                        },
-                        label = {
-                            Text(
-                                if (cnhUpload.isCompleted) {
-                                    "CNH enviada"
-                                } else if (cnhUpload.isUploading) {
-                                    "Enviando CNH..."
-                                } else {
-                                    "Enviar CNH"
-                                }
-                            )
-                        }
-                    )
-                }
-
-                if (cpfUpload.isUploading) {
-                    LinearProgressIndicator(
-                        progress = cpfUpload.progress / 100f,
-                        modifier = Modifier.fillMaxWidth()
-                    )
-                    Text(
-                        "CPF: ${cpfUpload.progress}%",
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                }
-
-                if (cnhUpload.isUploading) {
-                    LinearProgressIndicator(
-                        progress = cnhUpload.progress / 100f,
-                        modifier = Modifier.fillMaxWidth()
-                    )
-                    Text(
-                        "CNH: ${cnhUpload.progress}%",
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                }
-
-                AssistChip(
-                    onClick = {
-                        documentsValidated = cpfUpload.isCompleted && cnhUpload.isCompleted
-                    },
-                    label = {
+                Card(
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = CardDefaults.cardColors(
+                        containerColor = MaterialTheme.colorScheme.surfaceVariant
+                    ),
+                    shape = MaterialTheme.shapes.large
+                ) {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(24.dp),
+                        verticalArrangement = Arrangement.spacedBy(14.dp)
+                    ) {
                         Text(
-                            if (documentsValidated) {
-                                "Documentos autenticados"
-                            } else {
-                                "Autenticar documentos (simulado)"
-                            }
+                            "Dados Pessoais",
+                            style = MaterialTheme.typography.titleMedium,
+                            fontWeight = FontWeight.SemiBold
+                        )
+
+                        OutlinedTextField(
+                            value = name,
+                            onValueChange = { name = it },
+                            label = { Text("Nome completo") },
+                            leadingIcon = { Icon(Icons.Outlined.Person, contentDescription = null) },
+                            singleLine = true,
+                            modifier = Modifier.fillMaxWidth(),
+                            shape = MaterialTheme.shapes.medium
+                        )
+
+                        OutlinedTextField(
+                            value = email,
+                            onValueChange = { email = it },
+                            label = { Text("Email") },
+                            leadingIcon = { Icon(Icons.Outlined.Email, contentDescription = null) },
+                            singleLine = true,
+                            modifier = Modifier.fillMaxWidth(),
+                            shape = MaterialTheme.shapes.medium
+                        )
+
+                        OutlinedTextField(
+                            value = password,
+                            onValueChange = { password = it },
+                            label = { Text("Senha") },
+                            leadingIcon = { Icon(Icons.Outlined.Lock, contentDescription = null) },
+                            trailingIcon = {
+                                IconButton(onClick = { passwordVisible = !passwordVisible }) {
+                                    Icon(
+                                        if (passwordVisible) Icons.Outlined.VisibilityOff else Icons.Outlined.Visibility,
+                                        contentDescription = null
+                                    )
+                                }
+                            },
+                            singleLine = true,
+                            visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
+                            modifier = Modifier.fillMaxWidth(),
+                            shape = MaterialTheme.shapes.medium
+                        )
+
+                        OutlinedTextField(
+                            value = cpf,
+                            onValueChange = { cpf = it },
+                            label = { Text("CPF") },
+                            leadingIcon = { Icon(Icons.Outlined.CreditCard, contentDescription = null) },
+                            singleLine = true,
+                            modifier = Modifier.fillMaxWidth(),
+                            shape = MaterialTheme.shapes.medium
+                        )
+
+                        OutlinedTextField(
+                            value = cnh,
+                            onValueChange = { cnh = it },
+                            label = { Text("CNH") },
+                            leadingIcon = { Icon(Icons.Outlined.Badge, contentDescription = null) },
+                            singleLine = true,
+                            modifier = Modifier.fillMaxWidth(),
+                            shape = MaterialTheme.shapes.medium
                         )
                     }
-                )
-
-                if (!documentsValidated && (cpfUpload.isCompleted || cnhUpload.isCompleted)) {
-                    Text(
-                        "Envie CPF e CNH para autenticar.",
-                        color = Color(0xFFFFB74D),
-                        style = MaterialTheme.typography.bodySmall
-                    )
                 }
+
+                Spacer(modifier = Modifier.height(8.dp))
+
+                Card(
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = CardDefaults.cardColors(
+                        containerColor = MaterialTheme.colorScheme.surfaceVariant
+                    ),
+                    shape = MaterialTheme.shapes.large
+                ) {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(24.dp),
+                        verticalArrangement = Arrangement.spacedBy(12.dp)
+                    ) {
+                        Text(
+                            "Documentos",
+                            style = MaterialTheme.typography.titleMedium,
+                            fontWeight = FontWeight.SemiBold
+                        )
+                        Text(
+                            "Envie seus documentos para validação (simulado)",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+
+                        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                            FilledTonalButton(
+                                onClick = {
+                                    authViewModel.startCpfUpload()
+                                    authViewModel.clearError()
+                                },
+                                enabled = !cpfUpload.isCompleted && !cpfUpload.isUploading,
+                                modifier = Modifier.weight(1f)
+                            ) {
+                                Icon(
+                                    if (cpfUpload.isCompleted) Icons.Outlined.CheckCircle else Icons.Outlined.CloudUpload,
+                                    contentDescription = null,
+                                    modifier = Modifier.size(18.dp)
+                                )
+                                Spacer(modifier = Modifier.width(6.dp))
+                                Text(
+                                    when {
+                                        cpfUpload.isCompleted -> "CPF ✓"
+                                        cpfUpload.isUploading -> "${cpfUpload.progress}%"
+                                        else -> "Enviar CPF"
+                                    },
+                                    style = MaterialTheme.typography.labelMedium
+                                )
+                            }
+                            FilledTonalButton(
+                                onClick = {
+                                    authViewModel.startCnhUpload()
+                                    authViewModel.clearError()
+                                },
+                                enabled = !cnhUpload.isCompleted && !cnhUpload.isUploading,
+                                modifier = Modifier.weight(1f)
+                            ) {
+                                Icon(
+                                    if (cnhUpload.isCompleted) Icons.Outlined.CheckCircle else Icons.Outlined.CloudUpload,
+                                    contentDescription = null,
+                                    modifier = Modifier.size(18.dp)
+                                )
+                                Spacer(modifier = Modifier.width(6.dp))
+                                Text(
+                                    when {
+                                        cnhUpload.isCompleted -> "CNH ✓"
+                                        cnhUpload.isUploading -> "${cnhUpload.progress}%"
+                                        else -> "Enviar CNH"
+                                    },
+                                    style = MaterialTheme.typography.labelMedium
+                                )
+                            }
+                        }
+
+                        if (cpfUpload.isUploading || cnhUpload.isUploading) {
+                            val progress = when {
+                                cpfUpload.isUploading -> cpfUpload.progress
+                                else -> cnhUpload.progress
+                            }
+                            LinearProgressIndicator(
+                                progress = progress / 100f,
+                                modifier = Modifier.fillMaxWidth(),
+                                trackColor = MaterialTheme.colorScheme.surface
+                            )
+                        }
+
+                        FilledTonalButton(
+                            onClick = {
+                                documentsValidated = cpfUpload.isCompleted && cnhUpload.isCompleted
+                            },
+                            modifier = Modifier.fillMaxWidth(),
+                            enabled = cpfUpload.isCompleted && cnhUpload.isCompleted && !documentsValidated
+                        ) {
+                            Icon(
+                                Icons.Outlined.CheckCircle,
+                                contentDescription = null,
+                                modifier = Modifier.size(18.dp)
+                            )
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Text(
+                                if (documentsValidated) "Documentos autenticados ✓" else "Autenticar documentos"
+                            )
+                        }
+
+                        if (!documentsValidated && (cpfUpload.isCompleted || cnhUpload.isCompleted) && !(cpfUpload.isCompleted && cnhUpload.isCompleted)) {
+                            Text(
+                                "Envie CPF e CNH para autenticar.",
+                                color = MaterialTheme.colorScheme.primary,
+                                style = MaterialTheme.typography.bodySmall
+                            )
+                        }
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(16.dp))
 
                 Button(
                     onClick = {
@@ -207,16 +300,18 @@ fun RegisterScreen(navController: NavController, authViewModel: AuthViewModel = 
                             documentsValidated = documentsValidated
                         )
                     },
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(50.dp),
+                    shape = MaterialTheme.shapes.medium
                 ) {
-                    Text("Cadastrar")
+                    Text("Criar conta", style = MaterialTheme.typography.labelLarge)
                 }
 
                 TextButton(
-                    onClick = { navController.popBackStack() },
-                    modifier = Modifier.align(Alignment.End)
+                    onClick = { navController.popBackStack() }
                 ) {
-                    Text("Já tenho conta")
+                    Text("Já tem conta? Entrar")
                 }
             }
         }

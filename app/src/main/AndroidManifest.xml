@@ -4,7 +4,9 @@
 
     <application
         android:label="lokei"
-        android:theme="@style/Theme.Lokei">
+        android:theme="@style/Theme.Lokei"
+        android:usesCleartextTraffic="true"
+        android:hardwareAccelerated="true">
         <activity
             android:name=".MainActivity"
             android:exported="true">
