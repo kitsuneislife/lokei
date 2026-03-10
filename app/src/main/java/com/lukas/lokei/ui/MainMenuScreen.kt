@@ -74,7 +74,14 @@ fun MainMenuScreen(authViewModel: AuthViewModel) {
             }
             composable("main/vehicles") { VehicleDashboardScreen() }
             composable("main/pricing") { PricingAgendaScreen() }
-            composable("main/profile") { ProfileScreen(authViewModel = authViewModel) }
+            composable("main/profile") {
+                ProfileScreen(
+                    authViewModel = authViewModel,
+                    onOpenContracts = {
+                        tabNavController.navigate("main/contracts?vehicleId=-1&days=1")
+                    }
+                )
+            }
             composable(
                 route = "main/vehicle/{vehicleId}",
                 arguments = listOf(navArgument("vehicleId") { type = NavType.IntType })
@@ -82,6 +89,54 @@ fun MainMenuScreen(authViewModel: AuthViewModel) {
                 val vehicleId = backStackEntry.arguments?.getInt("vehicleId") ?: -1
                 VehicleDetailsScreen(
                     vehicleId = vehicleId,
+                    onBack = { tabNavController.popBackStack() },
+                    onOpenCheckout = { selectedVehicleId, rentalDays ->
+                        tabNavController.navigate("main/checkout?vehicleId=$selectedVehicleId&days=$rentalDays")
+                    }
+                )
+            }
+            composable(
+                route = "main/checkout?vehicleId={vehicleId}&days={days}",
+                arguments = listOf(
+                    navArgument("vehicleId") {
+                        type = NavType.IntType
+                        defaultValue = -1
+                    },
+                    navArgument("days") {
+                        type = NavType.IntType
+                        defaultValue = 1
+                    }
+                )
+            ) { backStackEntry ->
+                val vehicleId = backStackEntry.arguments?.getInt("vehicleId") ?: -1
+                val days = backStackEntry.arguments?.getInt("days") ?: 1
+                CheckoutReservationScreen(
+                    vehicleId = vehicleId,
+                    rentalDays = days,
+                    onBack = { tabNavController.popBackStack() },
+                    onOpenContracts = { selectedVehicleId, selectedDays ->
+                        tabNavController.navigate("main/contracts?vehicleId=$selectedVehicleId&days=$selectedDays")
+                    }
+                )
+            }
+            composable(
+                route = "main/contracts?vehicleId={vehicleId}&days={days}",
+                arguments = listOf(
+                    navArgument("vehicleId") {
+                        type = NavType.IntType
+                        defaultValue = -1
+                    },
+                    navArgument("days") {
+                        type = NavType.IntType
+                        defaultValue = 1
+                    }
+                )
+            ) { backStackEntry ->
+                val vehicleId = backStackEntry.arguments?.getInt("vehicleId") ?: -1
+                val days = backStackEntry.arguments?.getInt("days") ?: 1
+                DigitalContractsScreen(
+                    vehicleId = vehicleId,
+                    rentalDays = days,
                     onBack = { tabNavController.popBackStack() }
                 )
             }

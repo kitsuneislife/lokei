@@ -2,8 +2,11 @@ package com.lukas.lokei.ui
 
 import android.annotation.SuppressLint
 import android.webkit.WebView
+import android.webkit.WebChromeClient
 import android.webkit.WebViewClient
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -67,31 +70,40 @@ fun ExploreMapScreen(onOpenSearch: (String) -> Unit) {
             color = MaterialTheme.colorScheme.onSurfaceVariant
         )
 
-        OutlinedTextField(
-            value = "",
-            onValueChange = {},
-            readOnly = true,
-            label = { Text("Pesquisar veículos") },
-            placeholder = { Text("Toque para abrir busca com filtros") },
+        Box(
             modifier = Modifier
-                .fillMaxWidth(),
-            enabled = true
-        )
+                .fillMaxWidth()
+                .clickable { onOpenSearch("") }
+        ) {
+            OutlinedTextField(
+                value = "",
+                onValueChange = {},
+                readOnly = true,
+                label = { Text("Pesquisar veículos") },
+                placeholder = { Text("Toque para abrir busca com filtros") },
+                modifier = Modifier
+                    .fillMaxWidth(),
+                enabled = false
+            )
+        }
+
         ElevatedCard(
             modifier = Modifier
                 .fillMaxWidth()
                 .height(420.dp),
             colors = CardDefaults.elevatedCardColors(
                 containerColor = MaterialTheme.colorScheme.surfaceVariant
-            ),
-            onClick = { onOpenSearch("") }
+            )
         ) {
             AndroidView(
                 factory = { context ->
                     WebView(context).apply {
                         webViewClient = WebViewClient()
+                        webChromeClient = WebChromeClient()
                         settings.javaScriptEnabled = true
-                        loadDataWithBaseURL(null, html, "text/html", "utf-8", null)
+                        settings.domStorageEnabled = true
+                        settings.loadsImagesAutomatically = true
+                        loadDataWithBaseURL("https://localhost/", html, "text/html", "utf-8", null)
                     }
                 },
                 modifier = Modifier.fillMaxSize()

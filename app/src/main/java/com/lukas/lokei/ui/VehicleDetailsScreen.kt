@@ -27,7 +27,11 @@ import androidx.compose.ui.unit.dp
 import com.lukas.lokei.mock.ExploreVehicleRepository
 
 @Composable
-fun VehicleDetailsScreen(vehicleId: Int, onBack: () -> Unit) {
+fun VehicleDetailsScreen(
+    vehicleId: Int,
+    onBack: () -> Unit,
+    onOpenCheckout: (vehicleId: Int, rentalDays: Int) -> Unit
+) {
     val vehicle = ExploreVehicleRepository.byId(vehicleId)
 
     if (vehicle == null) {
@@ -166,6 +170,12 @@ fun VehicleDetailsScreen(vehicleId: Int, onBack: () -> Unit) {
                         Button(onClick = { rentalDays += 1 }) { Text("+") }
                     }
                     Text("Total estimado: R$ ${"%.2f".format(totalPrice)}")
+                    Button(
+                        onClick = { onOpenCheckout(vehicle.id, rentalDays) },
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Text("Continuar para checkout")
+                    }
                 }
             }
         }

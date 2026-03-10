@@ -27,7 +27,10 @@ import com.lukas.lokei.ui.components.AppToastType
 import com.lukas.lokei.ui.components.ShowStandardToast
 
 @Composable
-fun ProfileScreen(authViewModel: AuthViewModel = viewModel()) {
+fun ProfileScreen(
+    authViewModel: AuthViewModel = viewModel(),
+    onOpenContracts: (() -> Unit)? = null
+) {
     val user by authViewModel.currentUser.collectAsState()
     val error by authViewModel.errorMessage.collectAsState()
     val success by authViewModel.successMessage.collectAsState()
@@ -131,6 +134,14 @@ fun ProfileScreen(authViewModel: AuthViewModel = viewModel()) {
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Text("Salvar perfil")
+                }
+
+                Button(
+                    onClick = { onOpenContracts?.invoke() },
+                    modifier = Modifier.fillMaxWidth(),
+                    enabled = onOpenContracts != null
+                ) {
+                    Text("Painel de contratos digitais")
                 }
             }
         }
