@@ -12,6 +12,7 @@ app/build/
 
 # Gradle
 .gradle/
+# wrapper scripts are tracked now
 
 # Android
 /local.properties
