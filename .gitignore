@@ -26,3 +26,5 @@ out/
 
 # telemetry placeholder
 # (keep file, not ignored)
+
+bin/
